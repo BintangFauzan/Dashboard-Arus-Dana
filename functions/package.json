@@ -14,9 +14,9 @@
     "deploy": "node ../scripts/deploy.js functions,firestore"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "firebase-admin": "^14.5.1",
-    "firebase-functions": "^4.5.0",
-    "cors": "^2.8.5"
+    "firebase-functions": "^7.4.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
