@@ -1,0 +1,26 @@
+{
+  "name": "arus-dana-functions",
+  "private": true,
+  "main": "index.js",
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "test": "node --test test/accessPolicy.test.js",
+    "test:emulator": "node --test test/emulator.test.js",
+    "serve": "firebase emulators:start --only auth,functions,firestore,pubsub",
+    "seed:demo": "node seed-demo.js",
+    "deploy": "node ../scripts/deploy.js functions,firestore"
+  },
+  "dependencies": {
+    "firebase-admin": "^14.5.1",
+    "firebase-functions": "^4.5.0",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.0.0",
+    "globals": "^16.4.0"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "firestore": {
+    "database": "(default)",
+    "location": "asia-southeast2",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "runtime": "nodejs18",
+      "predeploy": [
+        "node scripts/verify-deploy-target.js",
+        "npm --prefix functions run lint",
+        "npm --prefix functions test"
+      ]
+    }
+  ],
+  "hosting": {
+    "public": "dist",
+    "predeploy": [
+      "node scripts/verify-deploy-target.js",
+      "npm run lint",
+      "npm test",
+      "npm run build"
+    ],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "functions": {
+      "port": 5001
+    },
+    "pubsub": {
+      "port": 8085
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000
+    },
+    "singleProjectMode": true
+  },
+  "auth": {
+    "providers": {}
+  }
+}

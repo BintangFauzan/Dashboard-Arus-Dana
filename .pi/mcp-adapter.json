@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "email-sender": {
+      "disabled": true
+    },
+    "pencil": {
+      "disabled": true
+    },
+    "open-design": {
+      "disabled": true
+    },
+    "voicestudio": {
+      "disabled": true
+    },
+    "discord": {
+      "disabled": true
+    },
+    "artemis": {
+      "disabled": true
+    },
+    "ollama-web-search": {
+      "disabled": true
+    }
+  }
+}

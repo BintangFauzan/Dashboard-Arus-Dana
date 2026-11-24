@@ -1,0 +1,67 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn()
+        && request.auth.uid == 'T1NayESIKubClhwpFaotV8Z7udu2';
+    }
+
+    match /users/{uid} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == uid);
+      allow write: if false;
+    }
+
+    match /access/{uid} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == uid);
+      allow write: if false;
+    }
+
+    match /feedback/{feedbackId} {
+      allow create: if isSignedIn()
+        && request.resource.data.keys().hasOnly([
+          'uid', 'category', 'message', 'status', 'createdAt'
+        ])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == 'new'
+        && request.resource.data.message is string
+        && request.resource.data.message.size() > 0
+        && request.resource.data.message.size() <= 2000
+        && request.resource.data.createdAt == request.time
+        && (!('category' in request.resource.data)
+          || (request.resource.data.category is string
+            && request.resource.data.category.size() <= 80));
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    match /accessCampaigns/{campaignId} {
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    match /config/{document} {
+      allow read: if isAdmin()
+        || (isSignedIn()
+          && document in [
+            'accessPolicy',
+            'trialPolicy',
+            'feedbackPrompts'
+          ]);
+      allow write: if false;
+    }
+
+    match /adminActivity/{activityId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
