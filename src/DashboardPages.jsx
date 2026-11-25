@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useDashboardData } from './context/dataContext'
 import { callCloudFunction } from './firebase'
+import { createCampaignDirect } from './campaignWrites'
 import {
   formatCampaignPeriod,
   getCampaignStatus,
@@ -290,15 +291,10 @@ function AccessPage() {
     setSubmitting(true)
     setError('')
     try {
-      const payload = {
+      await createCampaignDirect({
         ...campaignForm,
         uids: selectedUids,
-        campaignId: editingCampaignId || undefined,
-      }
-      await callFunction(
-        editingCampaignId ? 'updateAccessCampaign' : 'createAccessCampaign',
-        payload,
-      )
+      })
       setShowCampaignForm(false)
       setEditingCampaignId('')
       setCampaignForm({

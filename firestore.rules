@@ -41,23 +41,48 @@ service cloud.firestore {
 
     match /accessCampaigns/{campaignId} {
       allow read: if isAdmin();
-      allow create, update, delete: if false;
+      allow create: if isAdmin()
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 120
+        && request.resource.data.target in ['all_users', 'selected_users']
+        && request.resource.data.status in ['scheduled', 'active']
+        && request.resource.data.enabled == true
+        && request.resource.data.accessReconciledAt == null
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt is timestamp
+        && request.resource.data.startAt is timestamp
+        && request.resource.data.endAtExclusive is timestamp
+        && (
+          request.resource.data.target == 'all_users'
+          || request.resource.data.uids is list
+          && request.resource.data.uids.size() > 0
+          && request.resource.data.uids.size() <= 500
+        )
+      ;
+      allow update, delete: if false;
     }
 
     match /config/{document} {
-      allow read: if isAdmin()
-        || (isSignedIn()
-          && document in [
-            'accessPolicy',
-            'trialPolicy',
-            'feedbackPrompts'
-          ]);
+      allow read: if isAdmin() || (isSignedIn() && document in ['accessPolicy', 'trialPolicy', 'feedbackPrompts']);
       allow write: if false;
     }
 
     match /adminActivity/{activityId} {
       allow read: if isAdmin();
-      allow write: if false;
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasOnly([
+          'adminUid', 'type', 'summary', 'metadata', 'createdAt'
+        ])
+        && request.resource.data.adminUid == request.auth.uid
+        && request.resource.data.type == 'create_access_campaign'
+        && request.resource.data.summary is string
+        && request.resource.data.summary.size() <= 300
+        && request.resource.data.metadata is map
+        && request.resource.data.createdAt == request.time
+      ;
+      allow update, delete: if false;
     }
 
     match /{document=**} {
